@@ -1,0 +1,83 @@
+ Mongo Db Commands
+
+
+ show dbs
+ use <<DB Name>>   // this will switch to the specified db
+
+ show collections
+
+ //creates a collection (collections are similar to table)
+
+ db.createCollection('<<collection name>>')
+
+ //to insert values
+
+ db.<<collectionName>>.insert({<<columnName/key>>:'<<value>>'})
+
+// will display the entire values
+
+db.<<collectionName>>.find()
+
+// will display the values in a  sorted manner
+
+db.<<collectionName>>.find().pretty()
+
+//to check the current database we are in
+db
+
+//to create user with Admin Roles
+db.createUser(
+   {
+     user: "admin",
+     pwd: "admin",
+     roles: [ "readWrite", "dbAdmin" ]
+   }
+)
+
+// to update a field
+
+//the actual first insert cmd for the field that we are to modify
+
+db.<<collectionName>>.insert({field1:"value 1",field2:"value 2"});
+
+eg:  db.customers.insert({first_name:"Amish",last_name:"Tripati"});
+
+//to update 
+
+db.<<collectionName>>.update({<<field with which we are going to find the doc/ the unique field of the doc that needs updation>>:"value"},{<<the whole record with the updation and all the fields to be included});
+
+//updating to add aditional fields
+
+db.customers.update({first_name:"Amish"},{first_name:"Amish",last_name:"Tripati",gender:"Male"});
+
+//way around to only mention the field that needs updation instead of entire record --> using set operator
+
+$set will add values to the existing one.
+
+db.customers.update({first_name:"Amish"},{$set:{gender:"male"}});
+
+//to insert the record if match nt fund during update operation --> Upsert
+
+
+db.customers.update({first_name:"Dan"},{first_name:"Mary",last_name:"Brown"},{upsert:true});
+
+db.customers.find().count();
+
+
+db.customers.find({gender:"female"}).count();
+
+db.customers.find.limit(4);
+
+//1 --> ascending  -1 -->descending order while using sort
+
+db.customers.find.limit(4).sort({last_name:1});
+
+//iterate using for each
+
+db.customers.find().forEach(function(doc){print("Customer Name: "+ doc.first_name)});
+
+
+Aggregation:
+------------
+
+db.order.aggregate([{$match: {status:"A"}}, $group { _id:"$cust_id",total:{$sum:"$amount"}}])
